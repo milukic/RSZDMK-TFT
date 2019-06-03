@@ -977,11 +977,10 @@ void TFT_setFont(const unsigned char* font)
 	cfont.numchars = pgm_read_byte(&font[3]);
 }
 
-void TFT_drawBitmap(int x, int y, int sx, int sy, unsigned int* dat, int scale)
+void TFT_drawBitmap(int x, int y, int sx, int sy, prog_uint16_t* dat, int scale)
 {
 	unsigned int col;
 	int tx, ty, tc, tsx, tsy;
-	//unsigned char r, g, b;
 
 	if (scale == 1)
 	{
@@ -989,7 +988,7 @@ void TFT_drawBitmap(int x, int y, int sx, int sy, unsigned int* dat, int scale)
 		setXY(x, y, x + sx - 1, y + sy - 1);
 		for (tc = 0; tc < (sx * sy); tc++)
 		{
-			col = dat[tc];
+			col = pgm_read_word(&dat[tc]);
 			TFT_Write_DATA_2B(col >> 8, col & 0xff);
 		}
 		CS_HI;
@@ -1004,7 +1003,7 @@ void TFT_drawBitmap(int x, int y, int sx, int sy, unsigned int* dat, int scale)
 			for (tsy = 0; tsy < scale; tsy++)
 				for (tx = 0; tx < sx; tx++)
 				{
-					col = dat[(ty * sx) + tx];
+					col = pgm_read_word(&dat[(ty * sx) + tx]);
 					for (tsx = 0; tsx < scale; tsx++)
 						TFT_Write_DATA_2B(col >> 8, col & 0xff);
 				}
@@ -1014,26 +1013,26 @@ void TFT_drawBitmap(int x, int y, int sx, int sy, unsigned int* dat, int scale)
 	clrXY();
 }
 
-void TFT_drawBitmap2(int x, int y, int sx, int sy, unsigned int* dat, int deg,	int rox, int roy)
+void TFT_drawBitmap2(int x, int y, int sx, int sy, prog_uint16_t* dat, int deg)
 {
 	unsigned int col;
 	int tx, ty, newx, newy;
-	//unsigned char r, g, b;
+
 	float radian;
 	radian = deg * 0.0175;
 
 	if (deg == 0)
-		TFT_drawBitmap(x, y, sx, sy, dat, 0);
+		TFT_drawBitmap(x, y, sx, sy, dat, 1);
 	else
 	{
 		CS_LO;
 		for (ty = 0; ty < sy; ty++)
 			for (tx = 0; tx < sx; tx++)
 			{
-				col = dat[(ty * sx) + tx];
+				col = pgm_read_word(&dat[(ty * sx) + tx]);
 
-				newx = x + rox + (((tx - rox) * cos(radian)) - ((ty - roy) * sin(radian)));
-				newy = y + roy + (((ty - roy) * cos(radian)) + ((tx - rox) * sin(radian)));
+				newx = x + ((tx * cos(radian)) - (ty * sin(radian)));
+				newy = y + ((ty * cos(radian)) + (tx * sin(radian)));
 
 				setXY(newx, newy, newx, newy);
 				TFT_Write_DATA_2B(col >> 8, col & 0xff);

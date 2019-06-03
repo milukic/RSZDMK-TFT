@@ -6,6 +6,8 @@
 #ifndef UTFT_h
 #define UTFT_h
 
+#include <avr/pgmspace.h>
+
 ///Makro za poravnavanje teksta uz levu ivicu displeja
 #define LEFT 0
 ///Makro za poravnavanje teksta uz desnu ivicu displeja
@@ -166,6 +168,16 @@ void TFT_printNumF(double num, unsigned char dec, int x, int y, char divider, in
  * @param dat	pokazivac na look-up tabelu koja sadrzi informacije o slici
  * @param scale	faktor skaliranja
  */
-void TFT_drawBitmap(int x, int y, int sx, int sy, unsigned int* dat, int scale);
-void TFT_drawBitmap2(int x, int y, int sx, int sy, unsigned int* dat, int deg, int rox, int roy);
+void TFT_drawBitmap(int x, int y, int sx, int sy, prog_uint16_t* dat, int scale);
+
+/**
+ * Funkcija iscrtava rotiranu sliku (bitmapu) na zadatim koordinatama.
+ * @param x	x koordinata gornjeg levog ugla slike
+ * @param y	y koordinata gornjeg levog ugla slike
+ * @param sx	broj piksela po x osi
+ * @param sy	broj piksela po y osi
+ * @param dat	pokazivac na look-up tabelu koja sadrzi informacije o slici
+ * @param deg	ugao rotacije slike oko gornjeg levog ugla, u smeru kazaljke na satu
+ */
+void TFT_drawBitmap2(int x, int y, int sx, int sy, prog_uint16_t* dat, int deg);
 #endif
